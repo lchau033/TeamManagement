@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Course Page</title>
+    </h:head>
+    <h:body>
+        <f:view>
+            <p:tooltip />
+        <p:growl autoUpdate="true"/>
+        <h:form id="courseMenu">
+            <p:panel header="Menu">
+                <h:panelGroup>
+        <h:panelGrid columns="3">
+            <p:commandButton value="Log Out" action="#{logOutBean.logOut()}"/>
+            <h:dataTable id="courseTable" value="#{logInBean.courses}" var="course">
+                <h:column>
+                    <p:link outcome="#{logInBean.setCourseCodeParm()}" value="#{course.courseCode}">
+                        <f:param name="courseCode" value="#{course.courseCode}" />
+                    </p:link>
+                </h:column>
+            </h:dataTable>
+        </h:panelGrid>
+                </h:panelGroup>
+            </p:panel>
+        </h:form>
+            <p:tooltip />
+        <p:growl autoUpdate="true"/>
+            <h:form id="courseOptions">
+                <p:accordionPanel rendered="#{logInBean.showCourseOptions()}" activeIndex="#{logInBean.index}">
+        <p:tab title="Create Team">
+            <h:panelGrid columns="2" cellpadding="10">
+                <p:tooltip />
+                <p:growl autoUpdate="true"/>
+                <h:form>
+                <p:outputLabel value="Team name:*"/>
+                <p:inputText id="teamName"
+                             value="#{createTeamBean.name}"
+                             label="teamName" required="true"
+                             requiredMessage="A team name is required">
+                            <p:ajax event="keyup" update="teamNameMsg"/>
+                </p:inputText>
+                <p:message id="teamNameMsg" for="teamName"/><br></br>
+                <h:outputText value="Add a student to your team by providing their first and last name below"/><br></br>
+                <p:outputLabel value="First name:*"/>
+                <p:inputText id="firstName"
+                                         value="#{createTeamBean.firstName}"/>
+                <p:outputLabel value="&nbsp;&nbsp;&nbsp;Last name:*"/>
+                <p:inputText id="lastName"
+                                         value="#{createTeamBean.lastName}"/>
+                
+                            <h:panelGroup id="studentList">
+                            <p:outputPanel style="width:250px;padding-left:5px;margin-top:10px" rendered="#{createTeamBean.showStudentList()}">
+                                <p:dataList  value="#{createTeamBean.members}" var="member">
+                                    <f:facet name="Students in team"/>
+                                    #{member.lastName}, #{member.firstName}
+                                </p:dataList>
+                            </p:outputPanel>
+                            </h:panelGroup>
+                <p:commandButton value="Add Student" 
+                                 type="command"
+                                 title="Click to add a student">
+                    <f:ajax listener="#{createTeamBean.addStudent()}" execute="firstName lastName" render="studentList courseOptions"/>
+                </p:commandButton><br></br>
+                <p:commandButton id="submitBtn"
+                                         value="Create Team"
+                                         type="command">
+                   <f:ajax listener="#{createTeamBean.createTeam()}" execute="teamName" render="courseOptions"/>
+                </p:commandButton>
+                <p:commandButton value="Cancel" type="reset" />
+                </h:form>
+            </h:panelGrid>
+        </p:tab>
+                    <p:tab title="Join Team" rendered="#{!joinTeamBean.studentInTeam()}">
+                        <h:panelGrid>
+                            <h:form>
+   <p:dataTable id="checkboxDT" var="team" value="#{joinTeamBean.incompleteTeams}" selection="#{joinTeamBean.selectedIncompleTeams}" rowKey="#{team.name}" style="margin-bottom:0">
+        <f:facet name="header">
+            List of incomplete teams
+        </f:facet>
+       <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+        <p:column headerText="Name">
+            <h:outputText value="#{team.name}" />
+        </p:column>
+        <p:column headerText="Members">
+            <h:outputText value="#{joinTeamBean.getTeamMembers(team)}" />
+        </p:column>
+        <f:facet name="footer">
+            <p:commandButton process="checkboxDT" value="Join Teams" >
+                <f:ajax listener="#{joinTeamBean.addStudentToSelectedTeams()}" render="courseOptions"/>
+            </p:commandButton>
+        </f:facet>
+       <p:ajax event="rowSelectCheckbox" listener="#{joinTeamBean.addSelectedTeam}"   />
+       <p:ajax event="rowUnselectCheckbox" listener="#{joinTeamBean.removeSelectedTeam}"/>
+    </p:dataTable>
+                                </h:form>
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Accept Students" rendered="#{acceptNewStudentsBean.isLeader()}">
+                        <h:panelGrid>
+                            <h:form>
+                                <p:dataTable  id="candidates" var="student" value="#{acceptNewStudentsBean.candidates}" selection="#{joinTeamBean.selectedIncompleTeams}" rowKey="#{student.userId}" style="margin-bottom:0">
+        <f:facet name="header">
+            List of candidate students
+        </f:facet>
+         <p:column selectionMode="multiple" style="width:16px;text-align:center"/>                           
+        <p:column headerText="First Name">
+            <h:outputText value="#{student.firstName}" />
+        </p:column>
+        <p:column headerText="Last Name">
+            <h:outputText value="#{student.lastName}" />
+        </p:column>
+       <p:column headerText="UserId">
+           <h:outputText value="#{student.userId}" />
+        </p:column>
+        <f:facet name="footer">
+            <p:commandButton value="Accept New Students" >
+                <f:ajax listener="#{acceptNewStudentsBean.acceptStudents()}" render="courseOptions"/>
+            </p:commandButton>
+        </f:facet>
+        
+       <p:ajax event="rowSelectCheckbox" listener="#{acceptNewStudentsBean.addSelectedStudent}"/>
+       <p:ajax event="rowUnselectCheckbox" listener="#{acceptNewStudentsBean.removeSelectedStudent}"/>
+    </p:dataTable>
+                            </h:form>
+                        </h:panelGrid>
+                    </p:tab>
+    </p:accordionPanel>
+                <p:button value="Show Team Info" rendered ="#{showTeamInfoBean.hasTeam()}" outcome="teamInfo"/>
+                 <h:outputText rendered="#{logInBean.showCourseOptionsErrorMsg()}" style="color:red" id="courseOptionsMsg" value="The teams of this course cannot be managed either because the prof hasn't set it up yet or the deadline to modify teams has passed"/>
+            </h:form>
+        </f:view>
+        </h:body>
+</html>
+

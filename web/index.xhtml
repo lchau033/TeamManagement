@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Home Page</title>
+    </h:head>
+    <h:body>
+            <h:form>
+            <p:panel header="Menu">
+        <h:panelGrid columns="3">
+            <p:commandButton  value="Log In">
+                <f:ajax listener="#{logInBean.logIn()}" render="form1"/>
+            </p:commandButton>
+            <p:commandButton value="Create User">
+                <f:ajax listener="#{registerUserBean.registerUser()}" render="form1"/>
+            </p:commandButton>
+        </h:panelGrid>
+            </p:panel>
+        </h:form>
+        <p:tooltip />
+        <p:growl autoUpdate="true"/>
+        <h:form id="form1">
+            <h:panelGroup rendered="#{logInBean.showLogIn()}" id="login">
+            <h:panelGrid columns="3" >
+            <p:outputLabel value="UserId:*"/>
+                            <p:inputText id="userId"
+                                         value="#{logInBean.userId}">
+                            </p:inputText>
+            <br></br>
+                             <p:outputLabel value="Password:*"/>
+                            <p:password id="password"
+                                        value="#{logInBean.password}"/>
+                            <p:message id="passwordMsg" for="password"/>
+            </h:panelGrid>
+                <p:commandButton type="command" action="#{logInBean.findUser()}" value="Log In"/>
+               
+                <p:commandButton value="Cancel" type="reset" />
+                </h:panelGroup>
+            <h:panelGroup rendered="#{registerUserBean.showRegisterUser()}" id="createUser">
+             <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+            <p:outputLabel value="Responsibility:" />
+            <p:selectOneRadio id="responsibility" value="#{registerUserBean.responsibility}">
+                <f:selectItem itemLabel="Student" itemValue="Student" />
+                <f:selectItem itemLabel="Instructor" itemValue="Instructor" />
+                <f:ajax execute="responsibility" render="studentForm"/>
+            </p:selectOneRadio>
+         </h:panelGrid>
+            <h:panelGrid columns="3" >
+            <p:outputLabel value="UserId:*"/>
+                            <p:inputText id="userId1"
+                                         value="#{registerUserBean.userId}"
+                                         validatorMessage="Invalid UserId format"
+                                         type="number"
+                                         label="userId1" required="true"
+                                         requiredMessage="A UserId is required">
+                            <f:validateRegex pattern="[0-9][0-9][0-9][0-9][0-9][0-9]+$" />
+                            <p:ajax event="keyup" update="userId1Msg"/>
+                            </p:inputText>
+                            <p:message id="userId1Msg" for="userId1"/>
+                             <p:outputLabel value="Password:*"/>
+                            <p:password id="password1"
+                                        value="#{registerUserBean.password}"
+                                        feedback="true"
+                                        promptLabel="Enter Password"
+                                        weakLabel="Weak Password"
+                                        goodLabel="Good Password"
+                                        strongLabel="Strong Password"
+                                        match="confPwd" 
+                                        required="true"
+                                        requiredMessage="A Password is required"/>
+                            <p:message for="password1"/>
+                            <p:outputLabel for="confPwd" value="Confirm Password"/>
+                            <p:password id="confPwd"
+                                        value="#{registerUserBean.password}"
+                                        required="true"
+                                        title="Repeat password as above"/>
+                            <p:message for="confPwd"/>
+                            <p:outputLabel value="Email:*"/>
+                            <p:inputText id="email"
+                                         value="#{registerUserBean.email}"
+                                         validatorMessage="Invalid Email format"
+                                         label="Email" required="true"
+                                         requiredMessage="An Email is required"
+                                         title="Enter your email (e.g. xxx@xxx.xxx)">
+                                <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                                <p:ajax event="keyup" update="emailMsg"/>
+                            </p:inputText>
+                            <p:message id="emailMsg" for="email"/>
+                            <p:outputLabel value="FirstName:*"/>
+                            <p:inputText id="firstName"
+                                         value="#{registerUserBean.firstName}"
+                                         required="true" label="FirstName"
+                                         requiredMessage="A FirstName is required">
+                                <p:ajax event="keyup" update="firstNameMsg"/>
+                            </p:inputText>
+                            <p:message  id="firstNameMsg" for="firstName"/>
+                            <p:outputLabel value="LastName:"/>
+                            <p:inputText id="lastName"
+                                         value="#{registerUserBean.lastName}"/>
+                            <p:message for="lastName"/>
+                            </h:panelGrid>
+                            <p:tooltip />
+                            <p:growl autoUpdate="true"/>
+                            <h:panelGroup id="studentForm">
+                            <p:outputPanel rendered="#{registerUserBean.showStudentPanel()}">
+                                    <p:outputLabel value="Program:*"/>
+                                    <p:inputText id="program"
+                                         value="#{registerUserBean.program}"
+                                         required="true" label="progam"
+                                         requiredMessage="A program is required">
+                                        
+                                <p:ajax event="keyup" update="programMsg"/>
+                            </p:inputText>
+                            <p:message  id="programMsg" for="program"/>
+                            <p:outputLabel value="Courses:"/>
+                            <p:outputLabel value="Course code:*"/>
+                                    <p:inputText id="courseCode"
+                                         value="#{registerUserBean.courseCode}">
+                                    </p:inputText>
+                                     <p:commandButton value="Add Course" 
+                                                     type="command"
+                                                     title="Click to add a course">
+                                         <f:ajax listener="#{registerUserBean.addCourse()}" execute="courseCode" render="studentForm"/>
+                            </p:commandButton><br></br><br></br>
+                            </p:outputPanel>
+                            
+           
+                                <p:commandButton id="submitBtn"
+                                         value="Create User"
+                                         onclick="PF('bui').show()" oncomplete="PF('bui').hide()"
+                                         type="comand">
+                                    <f:ajax listener="#{registerUserBean.newUser()}" render="form1"/>
+                                </p:commandButton>
+                <p:commandButton value="Cancel" type="reset" />
+                
+                </h:panelGroup>
+             </h:panelGroup>
+                </h:form>
+        <p:blockUI block="form1"  widgetVar="bui">
+            Processing<br />
+            <p:graphicImage width="100pt" value="/resources/images/ajax_loader.gif"/>
+        </p:blockUI>
+    </h:body>
+</html>

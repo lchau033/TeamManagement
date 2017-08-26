@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Instructor Page</title>
+    </h:head>
+    <h:body>
+        <div>
+            <div id="right" align="right">
+                <ui:insert name="right" >
+                    <ui:include src="logout.xhtml" /> 
+                </ui:insert>
+            </div>
+        </div>
+        <div>
+            <p:tooltip />
+            <p:growl autoUpdate="true"/>
+            <p:accordionPanel activeIndex="#{logInBean.index}">
+                <p:tab title="My Courses">
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <p:dataTable id="courseTable" value="#{logInBean.courses}" var="coursesTaught">
+                            <p:column headerText="Name">
+                                <h:outputText value="#{coursesTaught.name}" />
+                            </p:column>
+                            <p:column headerText="Course Code">
+                                <h:outputText value="#{coursesTaught.courseCode}" />
+                            </p:column>
+                        </p:dataTable>
+                        </h:panelGrid>
+                </p:tab>
+            <p:tab title = "Update/Add Course Parameters">
+            <h:form id="updateCourse">
+
+                    <h:panelGroup rendered ="true" id ="updateCourseParameters">
+
+
+                        <h:panelGrid id="panelGridCourseUpdates" columns="3" >
+
+                            <p:outputLabel value="Course Code:*"/>
+                            <p:inputText id="courseCode"
+                                         value="#{setUpParametersBean.courseCode}"
+                                         validatorMessage="Invalid Course Code format"
+                                         title="Enter your course code"
+                                         label="CourseCode" required="true"
+                                         requiredMessage="A Course Code is required">
+                                <f:validateRegex pattern="[A-Za-z][A-Za-z][A-Za-z][0-9][0-9][0-9][0-9]" />
+                                <p:ajax event="keyup" update="userCourseCodeMsg"/>
+                            </p:inputText>
+                            <p:message id="userCourseCodeMsg" for="courseCode"/>
+
+
+                            <p:outputLabel value="Course Name:*"/>
+                            <p:inputText id="name"
+                                         value="#{setUpParametersBean.name}"
+                                         validatorMessage="Invalid Course Name format"
+                                         label="Name" required="true"
+                                         requiredMessage="A Course Name is required"
+                                         title="Enter your course name">
+                                <f:validateRegex pattern="^[_A-Za-z0-9-\+\s]+$" />
+                                <p:ajax event="keyup" update="courseNameMsg"/>
+                            </p:inputText>
+                            <p:message id="courseNameMsg" for="name"/>
+
+
+                            <p:outputLabel value="Description:"/>
+                            <p:inputText id="description"
+                                         value="#{setUpParametersBean.description}"
+                                         validatorMessage="Invalid Course Description"
+                                         required="false" label="Description"
+                                         title="Enter your course description">
+                                <p:ajax event="keyup" update="descriptionMsg"/>
+                            </p:inputText>
+                            <p:message  id="descriptionMsg" for="description"/>
+
+
+                            <p:outputLabel value="Minimum Number of Students"/>
+                            <p:inputText id="minStudents"
+                                         value="#{setUpParametersBean.minStudents}"
+                                         required="true" 
+                                         type="number"
+                                         validatorMessage="Invalid min number"
+                                         title="Enter the course's minimum number of students">
+                                <f:validateLength minimum="1"/>
+                                <p:ajax event="keyup" update="minStudentsMsg"/>
+                            </p:inputText>
+                            <p:message id="minStudentsMsg" for="minStudents"/>
+
+
+                            <p:outputLabel value="Maximum Number of Students"/>
+                            <p:inputText id="maxStudents"
+                                         value="#{setUpParametersBean.maxStudents}"
+                                         type="number"
+                                         required="true" 
+                                         validatorMessage="Invalid max number"
+                                         title="Enter the course's maximum number of students">
+                                <f:validateLength minimum="1"/>
+                                <p:ajax event="keyup" update="maxStudentsMsg"/>
+                            </p:inputText>
+
+                            <p:message id="maxStudentsMsg" for="maxStudents"/>
+
+
+                            <p:outputLabel value="Deadline:"/>
+                            <p:calendar id="deadline"
+                                        value="#{setUpParametersBean.deadline}"
+                                        label="Deadline"
+                                        yearRange = "c:c+20"
+                                        navigator="true"
+                                        showButtonPanel="true"
+                                        required ="true"
+                                        title="Pick your deadline from the calendar">
+                            </p:calendar>
+                            <p:message for="deadline"/>
+
+
+                            <p:outputLabel value="professor Id:*"/>
+                            <p:inputText  id="prof"
+                                          value="#{setUpParametersBean.getUserId()}"
+                                          validatorMessage="Invalid User Id format"
+                                          title="Your professor ID cannot be changed"
+                                          label="CourseCode" required="true"
+                                          readonly="true">
+                                <p:ajax event="keyup" update="profIdMsg"/>
+
+                            </p:inputText>
+                            <p:message id="profIdMsg" for="prof"/>
+                        <p:commandButton id="submitBtn"
+                                 value="Update/Create Course" 
+                                 onclick="PF('bui').show()"
+                                 actionListener="#{setUpParametersBean.doUpdateCourse()}" oncomplete="PF('bui').hide()">
+                </p:commandButton>
+                        </h:panelGrid>
+                    </h:panelGroup>
+            </h:form>  
+            </p:tab>
+            <p:blockUI block="updateCourse"  widgetVar="bui">
+                Processing<br />
+                <p:graphicImage width="100pt" value="/resources/images/ajax_loader.gif"/>
+            </p:blockUI>
+                </p:accordionPanel>
+                <p:button outcome="instructorTeamPage" value="Visualize Teams"/>
+        </div>
+
+    </h:body>
+</html>
+

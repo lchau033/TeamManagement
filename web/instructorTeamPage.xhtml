@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Instructor Team Page</title>
+    </h:head>
+    <h:body>
+        
+            <div id="right" align="right">
+                <ui:insert name="right" >
+                    <ui:include src="logout.xhtml" /> 
+                </ui:insert>
+                <p:button value="Back to options" outcome="instructorPage" />
+            </div>
+        
+        <div>
+            <p:tooltip />
+            <p:growl autoUpdate="true"/>
+            <h:form>
+                <f:metadata>
+                    <f:viewParam name="tabNum" value="#" />
+                </f:metadata>
+
+                <p:panel  header="My Courses" >
+                    <h:panelGroup  rendered="#{logInBean.showCoursesTaughtBy()}" id="coursesTaughtGroup">
+
+                        <p:accordionPanel  value="#{logInBean.courses}" var="coursesTaught" activeIndex="-1">
+                            <p:tab  title="#{coursesTaught.courseCode}"> 
+
+
+
+                                <h:panelGroup rendered="#{visualizeStudentTeamsBean.showCourseTeams(coursesTaught)}" >
+
+                                    <p:dataTable emptyMessage="no teams exist for this course" id="teamTable" value="#{visualizeStudentTeamsBean.teams}" var="t">
+                                        <p:column style="width:30px;" headerText="Team Name">
+                                            <p:outputLabel value="#{t.name}"/>
+                                        </p:column>
+
+                                        <p:column style="width:30px;" headerText="Status">
+                                            <p:outputLabel value ="#{t.status}"/>
+                                        </p:column>
+                                    </p:dataTable>
+
+                                </h:panelGroup>
+
+
+
+
+                            </p:tab>
+
+                        </p:accordionPanel>
+
+
+
+                    </h:panelGroup>
+
+                </p:panel>
+
+            </h:form>
+        </div>
+
+    </h:body>
+</html>
+
